@@ -26,6 +26,26 @@ forwards every request to `api.anthropic.com` unchanged, and on the way back it
 parses the `anthropic-ratelimit-unified-*` response headers — the 5-hour and
 weekly windows, utilisation, and reset times.
 
+```mermaid
+sequenceDiagram
+    participant CC as Claude Code
+    participant P as tokenia-proxy<br/>127.0.0.1
+    participant A as api.anthropic.com
+    participant W as menu bar app
+
+    CC->>P: POST /v1/messages<br/>(Authorization + body)
+    P->>A: forwarded unchanged
+    A-->>P: response + anthropic-ratelimit-unified-* headers
+    Note over P: headers parsed in passing →<br/>in-memory snapshot<br/>(numbers only, nothing on disk)
+    P-->>CC: response relayed untouched
+    W->>P: GET /__tokenia/status (loopback)
+    P-->>W: snapshot: utilisation, windows, reset times
+```
+
+Two endpoints are the proxy's own and are never forwarded: `HEAD /api/hello`
+(the installer's health check) and `GET /__tokenia/status` (the snapshot the
+widget reads). Everything else passes straight through.
+
 Two properties follow from this design:
 
 - **Passive.** The proxy never issues a request of its own. It only reads
