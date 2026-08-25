@@ -1,4 +1,16 @@
-# tokenia-proxy
+<div align="center">
+  <img src="assets/logo.png" alt="Tokenia logo" width="220" />
+
+  # tokenia-proxy
+
+  The proxy your OAuth token passes through — in the open.
+
+  [<img src="assets/download-badge.svg" alt="Download app for macOS" height="56" />](https://tokenia.dev/download)
+
+  [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg?style=flat)](https://tokenia.dev)
+  [![tests](https://github.com/tokenia-app/tokenia-proxy/actions/workflows/tests.yml/badge.svg)](https://github.com/tokenia-app/tokenia-proxy/actions/workflows/tests.yml)
+
+</div>
 
 The measurement core of [Tokenia](https://tokenia.dev) — a local HTTP proxy
 that reads Claude Code usage limits from the rate-limit headers Anthropic
@@ -25,6 +37,10 @@ Two properties follow from this design:
 
 ## What never happens to your token
 
+<p align="center">
+  <img src="assets/private-by-design.png" alt="Private by design: your OAuth token and conversations pass through the proxy but nothing is stored" width="480" />
+</p>
+
 Request and response **bodies are never written to disk or logged**. The
 `Authorization` header is **forwarded and forgotten** — it is never logged,
 never persisted, never sent anywhere except `api.anthropic.com`. Only parsed
@@ -39,6 +55,17 @@ The suite drives a request through the full proxy path with a token-shaped
 credential and secret-shaped body text, then asserts that no log output, no
 diagnostic, and no persisted artefact contains either. Any change that would
 leak them fails CI.
+
+## Inspectable while it runs
+
+<p align="center">
+  <img src="assets/full-control.png" alt="Full control locally: health check, address, agent, last request, settings file, backup" width="480" />
+</p>
+
+The proxy answers a local health check and reports its own state — address,
+last request seen, the settings file it wrote and the backup it kept — so the
+app's diagnostics panel, or plain `curl`, can always answer "is it alive and
+what did it change".
 
 ## What's here
 
